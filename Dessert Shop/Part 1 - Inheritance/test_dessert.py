@@ -28,3 +28,10 @@ class TestDessertItems(unittest.TestCase):
     self.assertEqual(testSundae.name, "Banana Split")
     self.assertEqual(testSundae.topping_name, "Nuts")
     self.assertEqual(testSundae.topping_price, 1.5)
+
+  def test_inheritance(self):
+      self.assertTrue(issubclass(Candy, DessertItem))
+      self.assertTrue(issubclass(Cookie, DessertItem))
+      self.assertTrue(issubclass(IceCream, DessertItem))
+      self.assertTrue(issubclass(Sundae, DessertItem))
+      self.assertTrue(issubclass(Sundae, IceCream))
