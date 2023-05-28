@@ -35,3 +35,6 @@ class TestDessertItems(unittest.TestCase):
       self.assertTrue(issubclass(IceCream, DessertItem))
       self.assertTrue(issubclass(Sundae, DessertItem))
       self.assertTrue(issubclass(Sundae, IceCream))
+
+if __name__ == '__main__':
+    unittest.main()
