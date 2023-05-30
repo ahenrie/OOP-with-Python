@@ -1,91 +1,50 @@
-from abc import ABC, abstractmethod
+#############################################################
+from receipt import make_receipt
+from dessert import Order, Candy, Cookie, IceCream, Sundae
 
-class DessertItem(ABC):
-    def __init__(self, name, tax_percentage=7.25):
-        self.name = name
-        self.tax_percentage = tax_percentage
+def format_money(amount):
+    return "$" + "{:.2f}".format(amount)
 
-    @abstractmethod
-    def calculate_cost(self):
-      pass
-    
-    def calculate_tax(self):
-      return self.calculate_cost() * (self.tax_percentage / 100)
+def main():
+    myOrder = Order()
+    candy1 = Candy("Candy Corn", 1.5, .25)
+    candy2 = Candy("Gummy Bears", .25, .35)
+    cookie1 = Cookie("Chocolate Chip", 6, 3.99)
+    icecream1 = IceCream("Pistachio", 2, .79)
+    sumndae1 = Sundae("Vanilla", 3, .69, "Hot Fudge", 1.29)
+    cookie2 = Cookie("Oatmeal Raisin", 2, 3.45)
 
-   
-   #pythonic of representing an object in string form
-    def __str__(self):
-        return self.name
+    # Add each instance of the objects to the Order object
+    myOrder.add(candy1)
+    myOrder.add(candy2)
+    myOrder.add(cookie1)
+    myOrder.add(icecream1)
+    myOrder.add(sumndae1)
+    myOrder.add(cookie2)
 
-class Candy(DessertItem):
-  def __init__(self, name, cand_weight, price_per_pound):
-    super().__init__(name)
-    self.cand_weight = cand_weight
-    self.price_per_pound = price_per_pound
+    # List of lists
+    data = []
+    total_cost = 0
+    total_tax = 0
 
-  def calculate_cost(self):
-    return self.cand_weight * self.price_per_pound
+    #first Rows
+    data.append(["Name", "Item Cost", "Tax"])
+    for item in myOrder:
+        name = str(item)
+        cost = item.calculate_cost()
+        tax = item.calculate_tax()
+        formatted_cost = format_money(cost)
+        formatted_tax = format_money(tax)
+        data.append([name, formatted_cost, formatted_tax])
+        total_cost += cost
+        total_tax += tax
 
-class Cookie(DessertItem):
-  def __init__(self, name, cookie_quantity, price_per_dozen):
-    super().__init__(name)
-    self.cookie_quantity = cookie_quantity
-    self.price_per_dozen = price_per_dozen
+    # Rows for totals
+    data.append(["---------------------------------"])
+    data.append(["Order Subtotals", format_money(total_cost), format_money(total_tax)])
+    data.append(["Order Total", " ",format_money(total_cost + total_tax)])
+    data.append(["Total items in the order", " ", str(len(myOrder))])
 
-  def calculate_cost(self):
-    return self.cookie_quantity * (self.price_per_dozen/12)
+    make_receipt(data, "receipt.pdf")
 
-class IceCream(DessertItem):
-  def __init__(self, name, scoop_count, price_per_scoop):
-    super().__init__(name)
-    self.scoop_count = scoop_count
-    self.price_per_scoop = price_per_scoop
-
-  def calculate_cost(self):
-    return self.scoop_count * self.price_per_scoop
-
-class Sundae(IceCream):
-  def __init__(self, name, scoop_count, price_per_scoop, topping_name, topping_price):
-    super().__init__(name, scoop_count, price_per_scoop)
-    self.topping_name = topping_name
-    self.topping_price = topping_price
-
-  #super() used to ensure the correct order in MRO
-  def calculate_cost(self):
-    return super().calculate_cost() + self.topping_price
-
-class Order:
-   def __init__(self):
-      self.order = []
-      self.cost = 0
-
-   def add(self, item):
-      self.order.append(item)
-      self.cost += item.calculate_cost()
-
-   def order_cost(self):
-     return self.cost
-
-   def order_tax(self):
-     total_tax = 0
-     for item in self.order:
-       total_tax += item.calculate_tax()
-     return total_tax
-   
-   def __len__(self):
-      return len(self.order)
-
-   def __iter__(self):
-      self.index = 0
-      return self
-
-   def __next__(self):
-      if self.index < len(self.order):
-         item = self.order[self.index]
-         self.index += 1
-         return item
-      else:
-         raise StopIteration
-
-   def __str__(self):
-      return f'Total number of items in order: {(self.__len__)()}'
+main()
